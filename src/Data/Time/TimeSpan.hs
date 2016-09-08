@@ -35,16 +35,16 @@ toMilliseconds :: TimeSpan -> Double
 toMilliseconds = unTimeSpan
 
 toSeconds :: TimeSpan -> Double
-toSeconds = (*1000) . toMilliseconds
+toSeconds = (/1000) . toMilliseconds
 
 toMinutes :: TimeSpan -> Double
-toMinutes = (*60) . toSeconds
+toMinutes = (/60) . toSeconds
 
 toHours :: TimeSpan -> Double
-toHours = (*60) . toMinutes
+toHours = (/60) . toMinutes
 
 toDays :: TimeSpan -> Double
-toDays = (*24) . toHours
+toDays = (/24) . toHours
 
 diffUTCTimeTS :: UTCTime -> UTCTime -> TimeSpan
 diffUTCTimeTS a b = seconds $ fromRational $ toRational $ diffUTCTime a b
