@@ -2,9 +2,10 @@
 module Data.Time.TimeSpan
   ( TimeSpan
   , milliseconds, seconds, minutes, hours, days
-  , toMilliseconds, toSeconds, toMinutes, toHours, toDays
+  , toMicroseconds, toMilliseconds, toSeconds, toMinutes, toHours, toDays
+  , absTS
   , diffUTCTimeTS, addUTCTimeTS
-  , sleepTS
+  , sleepTS, timeoutTS
   , timeAction
   )
 where
@@ -12,12 +13,13 @@ where
 import Control.Concurrent
 import Data.Time
 import System.CPUTime
+import System.Timeout
 
 -- | An abstract timespan. Use the provided smart constructors to create
 -- a meaningful timespan
 newtype TimeSpan
   = TimeSpan { unTimeSpan :: Double } -- as milliseconds
-  deriving (Eq, Ord)
+  deriving (Show, Eq, Ord)
 
 instance Monoid TimeSpan where
     mempty = TimeSpan 0
@@ -38,6 +40,9 @@ hours = minutes . (* 60)
 days :: Double -> TimeSpan
 days = hours . (* 24)
 
+toMicroseconds :: TimeSpan -> Double
+toMicroseconds = (* 1000) . toMilliseconds
+
 toMilliseconds :: TimeSpan -> Double
 toMilliseconds = unTimeSpan
 
@@ -53,14 +58,20 @@ toHours = (/60) . toMinutes
 toDays :: TimeSpan -> Double
 toDays = (/24) . toHours
 
+absTS :: TimeSpan -> TimeSpan
+absTS (TimeSpan x) = TimeSpan (abs x)
+
 diffUTCTimeTS :: UTCTime -> UTCTime -> TimeSpan
 diffUTCTimeTS a b = seconds $ fromRational $ toRational $ diffUTCTime a b
 
 addUTCTimeTS :: TimeSpan -> UTCTime -> UTCTime
-addUTCTimeTS a b = addUTCTime (fromRational $ toRational $ toSeconds a) b
+addUTCTimeTS a = addUTCTime (fromRational $ toRational $ toSeconds a)
 
 sleepTS :: TimeSpan -> IO ()
-sleepTS ts = threadDelay (round $ toMilliseconds ts * 1000)
+sleepTS ts = threadDelay (round $ toMicroseconds ts)
+
+timeoutTS :: TimeSpan -> IO a -> IO (Maybe a)
+timeoutTS ts = timeout (round $ toMicroseconds ts)
 
 timeAction :: IO a -> IO (TimeSpan, a)
 timeAction action =

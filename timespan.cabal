@@ -1,7 +1,7 @@
 name:                timespan
-version:             0.1.0.0
+version:             0.2.0.0
 synopsis:            Useful timespan datatype and functions
-description:         Please see README.md
+description:         A data type for time spans with some useful utility functions
 homepage:            https://github.com/agrafix/timespan#readme
 license:             MIT
 license-file:        LICENSE
@@ -10,7 +10,8 @@ maintainer:          mail@athiemann.net
 copyright:           2016 Alexander Thiemann
 category:            Web
 build-type:          Simple
--- extra-source-files:
+extra-source-files:
+                   stack.yaml
 cabal-version:       >=1.10
 
 library
