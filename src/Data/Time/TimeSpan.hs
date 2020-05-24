@@ -23,6 +23,9 @@ newtype TimeSpan
   = TimeSpan { unTimeSpan :: Double } -- as milliseconds
   deriving (Show, Eq, Ord)
 
+instance Semigroup TimeSpan where
+    (<>) = mappend
+
 -- | An empty `TimeSpan` is 0, and `mappend` is defined as addition
 instance Monoid TimeSpan where
     mempty = TimeSpan 0
